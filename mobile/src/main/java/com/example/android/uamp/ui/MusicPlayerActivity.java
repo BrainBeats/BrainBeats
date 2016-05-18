@@ -22,9 +22,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaBrowserCompat;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.android.uamp.R;
 import com.example.android.uamp.utils.LogHelper;
+import com.example.android.uamp.utils.PermissionHelper;
 
 /**
  * Main activity for the music player.
@@ -57,6 +59,7 @@ public class MusicPlayerActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         LogHelper.d(TAG, "Activity onCreate");
 
+        PermissionHelper.askPermissions(this);
         setContentView(R.layout.activity_player);
 
         initializeToolbar();
