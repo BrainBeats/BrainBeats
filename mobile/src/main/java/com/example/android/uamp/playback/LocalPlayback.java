@@ -21,11 +21,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.android.uamp.MusicService;
 import com.example.android.uamp.model.MusicProvider;
@@ -33,6 +35,7 @@ import com.example.android.uamp.model.MusicProviderSource;
 import com.example.android.uamp.utils.LogHelper;
 import com.example.android.uamp.utils.MediaIDHelper;
 
+import java.io.File;
 import java.io.IOException;
 
 import static android.media.MediaPlayer.OnCompletionListener;
@@ -177,7 +180,9 @@ public class LocalPlayback implements Playback, AudioManager.OnAudioFocusChangeL
                     MediaIDHelper.extractMusicIDFromMediaID(item.getDescription().getMediaId()));
 
             //noinspection ResourceType
-            String source = track.getString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
+            //String source = track.getString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
+            String source = "/sdcard/Download/peppy.mp3";
+            source = Uri.fromFile(new File(source)).toString();
 
             try {
                 createMediaPlayerIfNeeded();
