@@ -56,6 +56,16 @@ public class RemoteJSONSource implements MusicProviderSource {
 
     @Override
     public Iterator<MediaMetadataCompat> iterator() {
+        /*TODO
+            Ici on fais sortir tous les ULRs de chaque chanson trouvé dans
+            http://storage.googleapis.com/automotive-media/music.json (14 chansons).
+            À lieu du streaming, on veut utiliser le musique locale.
+
+            Ca sera ideale de scanner la musique ici et utiliser
+            MediaMetadataCompat(regarde return value) pour chaque chanson comme format.
+            Comme ca on dois pas modifier un million fichier dans ce project.
+            Prochaine methode dans ce classe define bien le structure de MediaMetadataCompat.
+         */
         try {
             int slashPos = CATALOG_URL.lastIndexOf('/');
             String path = CATALOG_URL.substring(0, slashPos + 1);
@@ -78,6 +88,17 @@ public class RemoteJSONSource implements MusicProviderSource {
     }
 
     private MediaMetadataCompat buildFromJSON(JSONObject json, String basePath) throws JSONException {
+        /*
+        * TODO
+        * Ici on manipule chaque chanson (regarde http://storage.googleapis.com/automotive-media/music.json).
+        * Au moins on dois changer le source, pour que l'ecteur fonctionne.
+        *
+        * Example:   AVANT
+        *           http://storage.googleapis.com/automotive-media/music.json/Jazz_In_Paris.mp3
+        *
+        *            APRES
+        *            "/sdcard/Download/peppy.mp3" (si il existe sur mobile)
+        * */
         String title = json.getString(JSON_TITLE);
         String album = json.getString(JSON_ALBUM);
         String artist = json.getString(JSON_ARTIST);
