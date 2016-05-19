@@ -16,6 +16,11 @@
 
 package com.example.android.uamp.model;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.media.MediaMetadataCompat;
 
 import com.example.android.uamp.utils.LogHelper;
@@ -25,12 +30,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Utility class to get a list of MusicTrack's based on a server-side JSON
@@ -53,38 +60,72 @@ public class RemoteJSONSource implements MusicProviderSource {
     private static final String JSON_TRACK_NUMBER = "trackNumber";
     private static final String JSON_TOTAL_TRACK_COUNT = "totalTrackCount";
     private static final String JSON_DURATION = "duration";
+    private Context applicationContext;
+
+    public RemoteJSONSource(Context context) {
+        applicationContext = context;
+    }
+
+    public void setContext(Context context) {
+        applicationContext = context;
+    }
 
     @Override
     public Iterator<MediaMetadataCompat> iterator() {
-        /*TODO
-            Ici on fais sortir tous les ULRs de chaque chanson trouvé dans
-            http://storage.googleapis.com/automotive-media/music.json (14 chansons).
-            À lieu du streaming, on veut utiliser le musique locale.
-
-            Ca sera ideale de scanner la musique ici et utiliser
-            MediaMetadataCompat(regarde return value) pour chaque chanson comme format.
-            Comme ca on dois pas modifier un million fichier dans ce project.
-            Prochaine methode dans ce classe define bien le structure de MediaMetadataCompat.
-         */
         try {
-            int slashPos = CATALOG_URL.lastIndexOf('/');
-            String path = CATALOG_URL.substring(0, slashPos + 1);
-            JSONObject jsonObj = fetchJSONFromUrl(CATALOG_URL);
+            ContentResolver cr = applicationContext.getContentResolver();
             ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
-            if (jsonObj != null) {
-                JSONArray jsonTracks = jsonObj.getJSONArray(JSON_MUSIC);
-
-                if (jsonTracks != null) {
-                    for (int j = 0; j < jsonTracks.length(); j++) {
-                        tracks.add(buildFromJSON(jsonTracks.getJSONObject(j), path));
+            Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+            String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
+            String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
+            Cursor cur = cr.query(uri, null, selection, null, sortOrder);
+            int count = 0;
+            List<String> musicList = new ArrayList<>();
+            if(cur != null) {
+                count = cur.getCount();
+                if(count > 0) {
+                    while(cur.moveToNext()) {
+                        tracks.add(buildFromStorage(cur));
                     }
+
                 }
             }
+            cur.close();
             return tracks.iterator();
         } catch (JSONException e) {
             LogHelper.e(TAG, e, "Could not retrieve music list");
             throw new RuntimeException("Could not retrieve music list", e);
         }
+    }
+
+    private MediaMetadataCompat buildFromStorage(Cursor cur) throws JSONException {
+        /*
+        TODO
+        Il faut trouver genre et iconUrl encore.
+         */
+        String source = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA));
+        String title = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+        String album = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM));
+        String artist = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+        String id = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media._ID));
+
+        String genre = "unknown";
+        //String iconUrl = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.?));
+
+        int duration = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)) * 1000; //ms
+        //int trackNumber = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.?));
+
+        return new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
+                .putString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE, source) //?
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+                .putString(MediaMetadataCompat.METADATA_KEY_GENRE, genre)
+                //.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, iconUrl)
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
+               // .putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, trackNumber)
+                .build();
     }
 
     private MediaMetadataCompat buildFromJSON(JSONObject json, String basePath) throws JSONException {
@@ -112,12 +153,14 @@ public class RemoteJSONSource implements MusicProviderSource {
         LogHelper.d(TAG, "Found music track: ", json);
 
         // Media is stored relative to JSON file
-        if (!source.startsWith("http")) {
-            source = basePath + source;
-        }
-        if (!iconUrl.startsWith("http")) {
-            iconUrl = basePath + iconUrl;
-        }
+        //if (!source.startsWith("http")) {
+        //    source = basePath + source;
+        //}
+        source = "/storage/emulated/0/Download/peppy.mp3";
+        //source = Uri.fromFile(new File(source)).toString();
+        // if (!iconUrl.startsWith("http")) {
+           // iconUrl = basePath + iconUrl;
+       // }
         // Since we don't have a unique ID in the server, we fake one using the hashcode of
         // the music source. In a real world app, this could come from the server.
         String id = String.valueOf(source.hashCode());

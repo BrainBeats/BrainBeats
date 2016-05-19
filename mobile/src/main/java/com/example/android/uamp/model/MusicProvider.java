@@ -16,6 +16,7 @@
 
 package com.example.android.uamp.model;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -54,6 +55,7 @@ public class MusicProvider {
     // Categorized caches for music track data:
     private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByGenre;
     private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;
+    private Context applicationContext;
 
     private final Set<String> mFavoriteTracks;
 
@@ -67,10 +69,11 @@ public class MusicProvider {
         void onMusicCatalogReady(boolean success);
     }
 
-    public MusicProvider() {
-        this(new RemoteJSONSource());
+    public MusicProvider(Context context) {
+        this(context, new RemoteJSONSource(context));
     }
-    public MusicProvider(MusicProviderSource source) {
+    public MusicProvider(Context context, MusicProviderSource source) {
+
         mSource = source;
         mMusicListByGenre = new ConcurrentHashMap<>();
         mMusicListById = new ConcurrentHashMap<>();
@@ -253,6 +256,7 @@ public class MusicProvider {
         try {
             if (mCurrentState == State.NON_INITIALIZED) {
                 mCurrentState = State.INITIALIZING;
+
 
                 Iterator<MediaMetadataCompat> tracks = mSource.iterator();
                 while (tracks.hasNext()) {
