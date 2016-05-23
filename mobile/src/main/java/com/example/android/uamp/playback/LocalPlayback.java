@@ -180,9 +180,7 @@ public class LocalPlayback implements Playback, AudioManager.OnAudioFocusChangeL
                     MediaIDHelper.extractMusicIDFromMediaID(item.getDescription().getMediaId()));
 
             //noinspection ResourceType
-            //String source = track.getString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
-            String source = "/sdcard/Download/peppy.mp3";
-            source = Uri.fromFile(new File(source)).toString();
+            String source = track.getString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
 
             try {
                 createMediaPlayerIfNeeded();
