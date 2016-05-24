@@ -16,6 +16,7 @@
 
 package com.pi.android.brainbeats.utils;
 
+import android.content.Context;
 import android.support.v4.media.MediaMetadataCompat;
 
 import com.pi.android.brainbeats.model.MusicProviderSource;
@@ -25,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class SimpleMusicProviderSource implements MusicProviderSource {
+
+    private Context context;
 
     private List<MediaMetadataCompat> mData = new ArrayList<>();
 
@@ -50,6 +53,11 @@ public class SimpleMusicProviderSource implements MusicProviderSource {
     @Override
     public Iterator<MediaMetadataCompat> iterator() {
         return mData.iterator();
+    }
+
+    @Override
+    public void setContext(Context context) {
+        this.context = context;
     }
 
 }

@@ -144,6 +144,10 @@
             </intent-filter>
         </receiver>
 
+        <provider
+            android:authorities="com.pi.android.brainbeats"
+            android:name="com.pi.android.brainbeats.data.TagProvider" />
+
     </application>
 
 </manifest>
