@@ -16,7 +16,7 @@
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.android.uamp" >
+    package="com.pi.android.brainbeats" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -35,7 +35,7 @@
         android:required="false" />
 
     <application
-        android:name=".UAMPApplication"
+        android:name="com.pi.android.brainbeats.UAMPApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -51,7 +51,7 @@
 
         <!-- Main activity for music browsing on phone -->
         <activity
-            android:name=".ui.MusicPlayerActivity"
+            android:name="com.pi.android.brainbeats.ui.MusicPlayerActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -67,14 +67,14 @@
 
         <!-- Placeholder activity for phone UI -->
         <activity
-            android:name=".ui.PlaceholderActivity"
+            android:name="com.pi.android.brainbeats.ui.PlaceholderActivity"
             android:label="@string/app_name">
         </activity>
 
         <!-- Proxy activity that opens either the NowPlaying TV or the mobile UI, depending on
         the current environment -->
         <activity
-            android:name=".ui.NowPlayingActivity"
+            android:name="com.pi.android.brainbeats.ui.NowPlayingActivity"
             android:icon="@drawable/ic_launcher">
         </activity>
 
@@ -110,7 +110,7 @@
          consumers through MediaBrowserService and MediaSession. Consumers connect to it through
          MediaBrowser (for browsing) and MediaController (for play session control) -->
         <service
-            android:name=".MusicService"
+            android:name="com.pi.android.brainbeats.MusicService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -125,13 +125,13 @@
         <!-- A full screen activity showing controls and a seek bar for
              the current playing music -->
         <activity
-            android:name=".ui.FullScreenPlayerActivity"
+            android:name="com.pi.android.brainbeats.ui.FullScreenPlayerActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".ui.MusicPlayerActivity">
+            android:parentActivityName="com.pi.android.brainbeats.ui.MusicPlayerActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MusicPlayerActivity"/>
+                android:value="com.pi.android.brainbeats.ui.MusicPlayerActivity"/>
         </activity>
 
         <!-- A receiver that will receive media buttons and send as
@@ -143,6 +143,10 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
+
+        <provider
+            android:authorities="com.pi.android.brainbeats"
+            android:name="com.pi.android.brainbeats.data.TagProvider" />
 
     </application>
 
