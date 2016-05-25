@@ -41,7 +41,6 @@ public class TagProvider extends ContentProvider {
                         null,
                         sortOrder
                 );
-                db.close();
                 break;
             case SONGTAG:
                 SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
@@ -91,7 +90,6 @@ public class TagProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         Uri returnUri;
-
         switch (match) {
             case TAG: {
                 long _id = db.insert(TagContract.TagEntry.TABLE_NAME, null, values);
@@ -117,13 +115,49 @@ public class TagProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings) {
-        return 0;
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int match = sUriMatcher.match(uri);
+        int deletedRows = 0;
+        switch (match){
+            case TAG:
+                deletedRows = db.delete(
+                        TagContract.TagEntry.TABLE_NAME, selection, selectionArgs
+                );
+                break;
+            case SONGTAG:
+                deletedRows = db.delete(
+                        TagContract.SongTagEntry.TABLE_NAME, selection, selectionArgs
+                );
+                break;
+        }
+        if (deletedRows != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return deletedRows;
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
-        return 0;
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int match = sUriMatcher.match(uri);
+        int updatedRows = 0;
+        switch (match){
+            case TAG:
+                updatedRows = db.update(
+                        TagContract.TagEntry.TABLE_NAME, values, selection, selectionArgs
+                );
+                break;
+            case SONGTAG:
+                updatedRows = db.update(
+                        TagContract.SongTagEntry.TABLE_NAME, values, selection, selectionArgs
+                );
+                break;
+        }
+        if (updatedRows != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return updatedRows;
     }
 
 
