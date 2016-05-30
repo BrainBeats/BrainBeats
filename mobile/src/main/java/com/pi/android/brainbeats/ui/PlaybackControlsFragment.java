@@ -16,6 +16,7 @@
 package com.pi.android.brainbeats.ui;
 
 import android.app.Fragment;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,6 +39,7 @@ import android.widget.Toast;
 import com.pi.android.brainbeats.AlbumArtCache;
 import com.pi.android.brainbeats.MusicService;
 import com.pi.android.brainbeats.R;
+import com.pi.android.brainbeats.data.Tagger;
 import com.pi.android.brainbeats.utils.LogHelper;
 
 /**
@@ -52,6 +55,8 @@ public class PlaybackControlsFragment extends Fragment {
     private TextView mExtraInfo;
     private ImageView mAlbumArt;
     private String mArtUrl;
+    private Button mTagButton;
+    private Tagger tagger;
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
     private final MediaControllerCompat.Callback mCallback = new MediaControllerCompat.Callback() {
@@ -71,12 +76,13 @@ public class PlaybackControlsFragment extends Fragment {
                     " song=", metadata.getDescription().getTitle());
             PlaybackControlsFragment.this.onMetadataChanged(metadata);
         }
+
     };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
 
         mPlayPause = (ImageButton) rootView.findViewById(R.id.play_pause);
         mPlayPause.setEnabled(true);
@@ -86,6 +92,7 @@ public class PlaybackControlsFragment extends Fragment {
         mSubtitle = (TextView) rootView.findViewById(R.id.artist);
         mExtraInfo = (TextView) rootView.findViewById(R.id.extra_info);
         mAlbumArt = (ImageView) rootView.findViewById(R.id.album_art);
+        tagger = new Tagger(getActivity());
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,6 +106,19 @@ public class PlaybackControlsFragment extends Fragment {
                         metadata.getDescription());
                 }
                 startActivity(intent);
+            }
+        });
+        mTagButton = (Button)rootView.findViewById(R.id.add_tag_button);
+        mTagButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MediaControllerCompat controller = ((FragmentActivity) getActivity())
+                        .getSupportMediaController();
+                String musicId = controller.getMetadata().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+                tagger.addTagToSong(Integer.parseInt(musicId), "calme");
+                //NOY READY!
+                //
+                //
             }
         });
         return rootView;

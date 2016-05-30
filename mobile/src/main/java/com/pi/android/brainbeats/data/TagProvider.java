@@ -43,18 +43,8 @@ public class TagProvider extends ContentProvider {
                 );
                 break;
             case SONGTAG:
-                SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-                StringBuilder sb = new StringBuilder();
-                sb.append(TagContract.TagEntry.TABLE_NAME);
-                sb.append(" INNER JOIN ");
-                sb.append(TagContract.SongTagEntry.TABLE_NAME);
-                sb.append(" ON (");
-                sb.append(TagContract.TagEntry.TABLE_NAME +"."+TagContract.TagEntry._ID);
-                sb.append(" = ");
-                sb.append(TagContract.SongTagEntry.TABLE_NAME + "." + TagContract.SongTagEntry._ID);
-                sb.append(")");
-                queryBuilder.setTables(sb.toString());
-                retCursor = queryBuilder.query(mOpenHelper.getReadableDatabase(),
+                SQLiteDatabase songTagdb = mOpenHelper.getReadableDatabase();
+                retCursor = songTagdb.query(TagContract.SongTagEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,

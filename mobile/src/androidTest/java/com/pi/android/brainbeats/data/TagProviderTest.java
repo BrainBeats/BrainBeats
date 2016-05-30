@@ -10,7 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.test.AndroidTestCase;
 
-public class TestProvider extends AndroidTestCase {
+public class TagProviderTest extends AndroidTestCase {
 
     public void deleteAllRecordsFromProvider() {
         mContext.getContentResolver().delete(
@@ -119,12 +119,12 @@ public class TestProvider extends AndroidTestCase {
         Cursor songTagCursor = mContext.getContentResolver().query(
                 TagContract.SongTagEntry.CONTENT_URI,  // Table to Query
                 null, // leaving "columns" null just returns all the columns.
-                null, // cols for "where" clause
+                TagContract.SongTagEntry.TABLE_NAME + "." + TagContract.SongTagEntry.COLUMN_TAG + " = " + tagRowId, // cols for "where" clause
                 null, // values for "where" clause
                 null // columns to group by
         );
 
-        songTagValues.putAll(testValues);
+        assertTrue(songTagCursor.getCount() > 0);
         TestUtilities.validateCursor("testInsertReadProvider. Error validating TagEntry insert.",
                 songTagCursor, songTagValues);
     }

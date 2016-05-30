@@ -65,6 +65,11 @@
             android:visibility="gone"
             android:contentDescription="@string/currently_playing_extra_info"
             android:textAppearance="?android:attr/textAppearanceSmall"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/add_tag_button"
+            android:text="Exited" />
     </LinearLayout>
     <ImageButton
         android:id="@+id/play_pause"
