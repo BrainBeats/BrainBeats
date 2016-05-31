@@ -16,7 +16,6 @@
 package com.pi.android.brainbeats.ui;
 
 import android.app.Fragment;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -30,9 +29,10 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,7 +55,7 @@ public class PlaybackControlsFragment extends Fragment {
     private TextView mExtraInfo;
     private ImageView mAlbumArt;
     private String mArtUrl;
-    private Button mTagButton;
+    private RadioGroup mTagButtonGroup;
     private Tagger tagger;
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
@@ -108,20 +108,27 @@ public class PlaybackControlsFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        mTagButton = (Button)rootView.findViewById(R.id.add_tag_button);
-        mTagButton.setOnClickListener(new View.OnClickListener() {
+        mTagButtonGroup = (RadioGroup)rootView.findViewById(R.id.add_tag);
+        mTagButtonGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                MediaControllerCompat controller = ((FragmentActivity) getActivity())
-                        .getSupportMediaController();
-                String musicId = controller.getMetadata().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                tagger.addTagToSong(Integer.parseInt(musicId), "calme");
-                //NOY READY!
-                //
-                //
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                String message = ((RadioButton)radioGroup.findViewById(i)).getText().toString();
+                int musicId = getMusicID();
+                tagger.addTagToSong(musicId, message);
             }
         });
         return rootView;
+    }
+
+    private int getMusicID() {
+        MediaControllerCompat controller = ((FragmentActivity) getActivity())
+                .getSupportMediaController();
+        final MediaMetadataCompat metadata = controller.getMetadata();
+        if (metadata == null) {
+            return -1;
+        }
+        String musicId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+        return Integer.parseInt(musicId);
     }
 
     @Override
@@ -167,6 +174,11 @@ public class PlaybackControlsFragment extends Fragment {
         if (metadata == null) {
             return;
         }
+        final String tag = tagger.getTagBySongID(getMusicID());
+        final RadioButton radioButton = getRadioButtonByTag(tag);
+        if (radioButton != null) {
+            mTagButtonGroup.check(radioButton.getId());
+        }
 
         mTitle.setText(metadata.getDescription().getTitle());
         mSubtitle.setText(metadata.getDescription().getSubtitle());
@@ -199,6 +211,24 @@ public class PlaybackControlsFragment extends Fragment {
                 );
             }
         }
+    }
+
+    /*
+    * Iterates all radioButtons in mTagButtonGroup
+    * and returns the one with given tag as text.
+    * */
+    private RadioButton getRadioButtonByTag(String tag) {
+        int count = mTagButtonGroup.getChildCount();
+        for (int i=0;i<count;i++) {
+            View view = mTagButtonGroup.getChildAt(i);
+            if (view instanceof RadioButton) {
+                RadioButton radioButton = (RadioButton)view;
+                if (radioButton.getText().toString().equals(tag)) {
+                    return radioButton;
+                }
+            }
+        }
+        return null;
     }
 
     public void setExtraInfo(String extraInfo) {
