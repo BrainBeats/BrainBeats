@@ -17,7 +17,6 @@ package com.pi.android.brainbeats.ui;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
@@ -25,18 +24,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.pi.android.brainbeats.AlbumArtCache;
 import com.pi.android.brainbeats.MusicService;
 import com.pi.android.brainbeats.R;
 import com.pi.android.brainbeats.data.Tagger;
@@ -55,8 +51,10 @@ public class PlaybackControlsFragment extends Fragment {
     private TextView mExtraInfo;
     private ImageView mAlbumArt;
     private String mArtUrl;
-    private RadioGroup mTagButtonGroup;
+    private TagButton exited;
+    private RadioButton calm;
     private Tagger tagger;
+    private int currentMusicID = -1;
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
     private final MediaControllerCompat.Callback mCallback = new MediaControllerCompat.Callback() {
@@ -108,22 +106,25 @@ public class PlaybackControlsFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        mTagButtonGroup = (RadioGroup)rootView.findViewById(R.id.add_tag);
-        mTagButtonGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        exited = new TagButton((RadioButton) rootView.findViewById(R.id.exitedButton));
+        exited.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                String message = ((RadioButton)radioGroup.findViewById(i)).getText().toString();
-                int musicId = getMusicID();
-                tagger.addTagToSong(musicId, message);
+            public void onClick(View view) {
+                tagger.addTagToSong(currentMusicID, exited.getText().toString());
             }
         });
+        calm = (RadioButton)rootView.findViewById(R.id.calmButton);
+        calm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tagger.addTagToSong(currentMusicID, calm.getText().toString());
+            }
+        });
+
         return rootView;
     }
 
-    private int getMusicID() {
-        MediaControllerCompat controller = ((FragmentActivity) getActivity())
-                .getSupportMediaController();
-        final MediaMetadataCompat metadata = controller.getMetadata();
+    private int getMusicID(MediaMetadataCompat metadata) {
         if (metadata == null) {
             return -1;
         }
@@ -174,61 +175,23 @@ public class PlaybackControlsFragment extends Fragment {
         if (metadata == null) {
             return;
         }
-        final String tag = tagger.getTagBySongID(getMusicID());
-        final RadioButton radioButton = getRadioButtonByTag(tag);
-        if (radioButton != null) {
-            mTagButtonGroup.check(radioButton.getId());
-        }
-
         mTitle.setText(metadata.getDescription().getTitle());
         mSubtitle.setText(metadata.getDescription().getSubtitle());
-        String artUrl = null;
-        if (metadata.getDescription().getIconUri() != null) {
-            artUrl = metadata.getDescription().getIconUri().toString();
-        }
-        if (!TextUtils.equals(artUrl, mArtUrl)) {
-            mArtUrl = artUrl;
-            Bitmap art = metadata.getDescription().getIconBitmap();
-            AlbumArtCache cache = AlbumArtCache.getInstance();
-            if (art == null) {
-                art = cache.getIconImage(mArtUrl);
-            }
-            if (art != null) {
-                mAlbumArt.setImageBitmap(art);
-            } else {
-                cache.fetch(artUrl, new AlbumArtCache.FetchListener() {
-                            @Override
-                            public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
-                                if (icon != null) {
-                                    LogHelper.d(TAG, "album art icon of w=", icon.getWidth(),
-                                            " h=", icon.getHeight());
-                                    if (isAdded()) {
-                                        mAlbumArt.setImageBitmap(icon);
-                                    }
-                                }
-                            }
-                        }
-                );
-            }
-        }
     }
 
-    /*
-    * Iterates all radioButtons in mTagButtonGroup
-    * and returns the one with given tag as text.
-    * */
-    private RadioButton getRadioButtonByTag(String tag) {
-        int count = mTagButtonGroup.getChildCount();
-        for (int i=0;i<count;i++) {
-            View view = mTagButtonGroup.getChildAt(i);
-            if (view instanceof RadioButton) {
-                RadioButton radioButton = (RadioButton)view;
-                if (radioButton.getText().toString().equals(tag)) {
-                    return radioButton;
-                }
-            }
+    private void updateTags(MediaMetadataCompat metadata) {
+        currentMusicID = getMusicID(metadata);
+        final String tag = tagger.getTagBySongID(currentMusicID);
+        if (tag.equals(exited.getText().toString())) {
+            exited.setChecked(true);
+            calm.setChecked(false);
+        } else if(tag.equals(calm.getText().toString())) {
+            exited.setChecked(false);
+            calm.setChecked(true);
+        } else {
+            exited.setChecked(false);
+            calm.setChecked(false);
         }
-        return null;
     }
 
     public void setExtraInfo(String extraInfo) {
@@ -279,6 +242,10 @@ public class PlaybackControlsFragment extends Fragment {
                 extraInfo = getResources().getString(R.string.casting_to_device, castName);
             }
         }
+        final MediaMetadataCompat metadata = controller.getMetadata();
+        if (metadata != null) {
+            updateTags(metadata);
+        }
         setExtraInfo(extraInfo);
     }
 
@@ -321,6 +288,29 @@ public class PlaybackControlsFragment extends Fragment {
                 .getSupportMediaController();
         if (controller != null) {
             controller.getTransportControls().pause();
+        }
+    }
+
+    class TagButton {
+        private RadioButton radioButton;
+        private int counter = 1;
+
+        public TagButton(RadioButton radioButton) {
+            this.radioButton = radioButton;
+        }
+
+        public void setChecked(boolean b) {
+            System.out.println("CHANGED: "+ counter);
+            counter++;
+            radioButton.setChecked(b);
+        }
+
+        public void setOnClickListener(View.OnClickListener listener) {
+            radioButton.setOnClickListener(listener);
+        }
+
+        public CharSequence getText() {
+            return radioButton.getText();
         }
     }
 }

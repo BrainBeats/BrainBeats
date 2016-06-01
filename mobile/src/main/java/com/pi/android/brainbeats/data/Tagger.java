@@ -50,8 +50,7 @@ public class Tagger {
             tagID = addTag(tag);
         } else {
             query.moveToFirst();
-            String tagIDstr = query.getString(query.getColumnIndex(TagContract.TagEntry._ID));
-            tagID = Long.parseLong(tagIDstr);
+            tagID = query.getLong(query.getColumnIndex(TagContract.TagEntry._ID));
         }
         query.close();
 
@@ -73,7 +72,7 @@ public class Tagger {
         int count = songTagQuery.getCount();
         if (!songTagQuery.moveToNext()) {
             songTagQuery.close();
-            return null;
+            return "";
         }
         final String tagID = songTagQuery.getString(
                 songTagQuery.getColumnIndex(TagContract.SongTagEntry.COLUMN_TAG)
@@ -81,7 +80,7 @@ public class Tagger {
         songTagQuery.close();
         final Cursor tagQuery = contentResolver.query(tagUri, null, "_ID = ?", new String[]{tagID}, null);
         if (!tagQuery.moveToNext()) {
-            return null;
+            return "";
         }
         return tagQuery.getString(tagQuery.getColumnIndex(TagContract.TagEntry.COLUMN_NAME));
     }

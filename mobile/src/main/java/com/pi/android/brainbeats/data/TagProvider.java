@@ -82,6 +82,20 @@ public class TagProvider extends ContentProvider {
         Uri returnUri;
         switch (match) {
             case TAG: {
+                final String tagName = values.getAsString(TagContract.TagEntry.COLUMN_NAME);
+                final Cursor tagAllreadyExists = query(
+                        TagContract.TagEntry.CONTENT_URI,
+                        null,
+                        TagContract.TagEntry.TABLE_NAME + "." + TagContract.TagEntry.COLUMN_NAME + " = ?",
+                        new String[]{tagName}, null);
+                if (tagAllreadyExists.getCount() > 0) {
+                    tagAllreadyExists.moveToNext();
+                    final long id = tagAllreadyExists.getLong(
+                            tagAllreadyExists.getColumnIndex(TagContract.TagEntry._ID)
+                    );
+                    returnUri = TagContract.TagEntry.buildTagUri(id);
+                    break;
+                }
                 long _id = db.insert(TagContract.TagEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
                     returnUri = TagContract.TagEntry.buildTagUri(_id);
@@ -90,6 +104,23 @@ public class TagProvider extends ContentProvider {
                 break;
             }
             case SONGTAG: {
+                final String song = values.getAsString(TagContract.SongTagEntry.COLUMN_SONG);
+                final Cursor songHasAllreadyTag = query(
+                        TagContract.SongTagEntry.CONTENT_URI,
+                        null,
+                        TagContract.SongTagEntry.TABLE_NAME + "." + TagContract.SongTagEntry.COLUMN_SONG + " = ?",
+                        new String[]{song}, null);
+                if (songHasAllreadyTag.getCount() > 0) {
+                    songHasAllreadyTag.moveToNext();
+                    final long id = songHasAllreadyTag.getLong(
+                            songHasAllreadyTag.getColumnIndex(TagContract.SongTagEntry._ID)
+                    );
+                    update(TagContract.SongTagEntry.CONTENT_URI, values,
+                            TagContract.SongTagEntry.TABLE_NAME + "." + TagContract.SongTagEntry._ID + " = ?",
+                            new String[]{id+""});
+                    returnUri = TagContract.SongTagEntry.buildSongTagUri(id);
+                    break;
+                }
                 long _id = db.insert(TagContract.SongTagEntry.TABLE_NAME, null, values);
                 if (_id > 0)
                     returnUri = TagContract.SongTagEntry.buildSongTagUri(_id);
