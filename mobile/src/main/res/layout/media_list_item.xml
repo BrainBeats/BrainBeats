@@ -36,8 +36,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_marginStart="@dimen/media_item_text_margin_start"
-        android:layout_centerVertical="true"
-        android:orientation="vertical">
+        android:layout_marginEnd="80dp"
+        android:orientation="vertical"
+        android:layout_alignBottom="@+id/play_eq"
+        android:id="@+id/linearLayout">
 
         <TextView
             android:id="@+id/title"
@@ -60,5 +62,4 @@
             android:textColor="?android:attr/textColorSecondary"/>
 
     </LinearLayout>
-
 </RelativeLayout>
