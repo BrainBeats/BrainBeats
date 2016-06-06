@@ -22,7 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".MusicPlayerActivity">
+    tools:context=".ui.MusicPlayerActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -35,7 +35,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/toolbar_container"
-            android:layout_above="@+id/controls_container"/>
+            android:layout_above="@+id/controls_container">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Take me to the hospital"
+                android:id="@+id/button_headset"
+                android:layout_gravity="center" />
+        </FrameLayout>
 
         <android.support.v7.widget.CardView
             android:id="@+id/controls_container"

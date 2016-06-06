@@ -18,18 +18,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.pi.android.brainbeats" >
 
+    <uses-sdk
+        android:minSdkVersion="19"
+        android:targetSdkVersion="21" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- Set android.software.leanback to false, so the APK will be available to both
-    TV and regular devices. -->
-    <uses-feature
-        android:name="android.software.leanback"
-        android:required="false" />
+
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
@@ -71,6 +74,15 @@
             android:label="@string/app_name">
         </activity>
 
+        <!-- HeadsetService activity for phone UI -->
+        <activity
+            android:name="com.pi.android.brainbeats.ui.HeadsetService"
+            android:label="@string/app_name">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <!-- Proxy activity that opens either the NowPlaying TV or the mobile UI, depending on
         the current environment -->
         <activity
@@ -78,14 +90,6 @@
             android:icon="@drawable/ic_launcher">
         </activity>
 
-        <!--
-             (OPTIONAL) use this meta data to indicate which icon should be
-             used in Android Auto media notifications (for example, when the
-             music changes and the user is looking at another app)
-        -->
-        <meta-data
-            android:name="com.google.android.gms.car.notification.SmallIcon"
-            android:resource="@drawable/ic_notification" />
 
         <!--
              (OPTIONAL) use this meta data to override the theme from which Android Auto will

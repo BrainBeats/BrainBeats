@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaBrowserCompat;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
 
 import com.pi.android.brainbeats.R;
 import com.pi.android.brainbeats.utils.LogHelper;
@@ -42,6 +44,8 @@ public class MusicPlayerActivity extends BaseActivity
 
     public static final String EXTRA_START_FULLSCREEN =
             "com.example.android.uamp.EXTRA_START_FULLSCREEN";
+    private Button mPasserelle = null;
+
 
     /**
      * Optionally used with {@link #EXTRA_START_FULLSCREEN} to carry a MediaDescription to
@@ -60,8 +64,21 @@ public class MusicPlayerActivity extends BaseActivity
 
         PermissionHelper.askPermissions(this);
         setContentView(R.layout.activity_player);
-
         initializeToolbar();
+
+        mPasserelle = (Button) findViewById(R.id.button_headset);
+
+        mPasserelle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Le premier paramètre est le nom de l'activité actuelle
+                // Le second est le nom de l'activité de destination
+                Intent headsetActivity = new Intent(MusicPlayerActivity.this, HeadsetService.class);
+                // Puis on lance l'intent !
+                startActivity(headsetActivity);
+            }
+        });
+
         initializeFromParams(savedInstanceState, getIntent());
 
         // Only check if a full screen player is needed on the first time:
