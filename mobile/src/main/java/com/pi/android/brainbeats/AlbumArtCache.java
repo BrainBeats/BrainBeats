@@ -112,7 +112,7 @@ public final class AlbumArtCache {
             @Override
             protected void onPostExecute(Bitmap[] bitmaps) {
                 if (bitmaps == null) {
-                    listener.onError(artUrl, new IllegalArgumentException("got null bitmaps"));
+                    //listener.onError(artUrl, new IllegalArgumentException("got null bitmaps"));
                 } else {
                     listener.onFetched(artUrl,
                         bitmaps[BIG_BITMAP_INDEX], bitmaps[ICON_BITMAP_INDEX]);
