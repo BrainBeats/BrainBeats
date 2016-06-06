@@ -53,4 +53,6 @@
     <string name="loading">Loading…</string>
     <string name="media_route_menu_title">Play on…</string>
     <string name="tag">Exite</string>
+    <string name="tags">Tags</string>
+    <string name="settings">Settings</string>
 </resources>

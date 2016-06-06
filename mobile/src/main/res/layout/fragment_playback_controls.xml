@@ -65,16 +65,21 @@
             android:visibility="gone"
             android:contentDescription="@string/currently_playing_extra_info"
             android:textAppearance="?android:attr/textAppearanceSmall"/>
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/exitedButton"
-            android:text="Exited" />
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/calmButton"
-            android:text="Calm" />
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tag">
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/exitedButton"
+                android:text="Exited" />
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/calmButton"
+                android:text="Calm" />
+        </RadioGroup>
     </LinearLayout>
     <ImageButton
         android:id="@+id/play_pause"

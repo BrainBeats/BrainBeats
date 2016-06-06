@@ -51,7 +51,7 @@ public class PlaybackControlsFragment extends Fragment {
     private TextView mExtraInfo;
     private ImageView mAlbumArt;
     private String mArtUrl;
-    private TagButton exited;
+    private RadioButton exited;
     private RadioButton calm;
     private Tagger tagger;
     private int currentMusicID = -1;
@@ -106,7 +106,7 @@ public class PlaybackControlsFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        exited = new TagButton((RadioButton) rootView.findViewById(R.id.exitedButton));
+        exited = (RadioButton) rootView.findViewById(R.id.exitedButton);
         exited.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -175,6 +175,7 @@ public class PlaybackControlsFragment extends Fragment {
         if (metadata == null) {
             return;
         }
+        updateTags(metadata);
         mTitle.setText(metadata.getDescription().getTitle());
         mSubtitle.setText(metadata.getDescription().getSubtitle());
     }
@@ -288,29 +289,6 @@ public class PlaybackControlsFragment extends Fragment {
                 .getSupportMediaController();
         if (controller != null) {
             controller.getTransportControls().pause();
-        }
-    }
-
-    class TagButton {
-        private RadioButton radioButton;
-        private int counter = 1;
-
-        public TagButton(RadioButton radioButton) {
-            this.radioButton = radioButton;
-        }
-
-        public void setChecked(boolean b) {
-            System.out.println("CHANGED: "+ counter);
-            counter++;
-            radioButton.setChecked(b);
-        }
-
-        public void setOnClickListener(View.OnClickListener listener) {
-            radioButton.setOnClickListener(listener);
-        }
-
-        public CharSequence getText() {
-            return radioButton.getText();
         }
     }
 }

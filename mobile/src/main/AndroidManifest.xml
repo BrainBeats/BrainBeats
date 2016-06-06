@@ -74,6 +74,20 @@
             android:label="@string/app_name">
         </activity>
 
+        <!-- Settings activity for phone UI -->
+        <activity
+            android:name="com.pi.android.brainbeats.settings.SettingsActivity">
+        </activity>
+        <activity
+            android:name="com.pi.android.brainbeats.settings.PreferenceWithHeaders"
+            android:label="@string/settings"
+            android:parentActivityName="com.pi.android.brainbeats.ui.MusicPlayerActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.pi.android.brainbeats.ui.MusicPlayerActivity" />
+
+        </activity>
+
         <!-- HeadsetService activity for phone UI -->
         <activity
             android:name="com.pi.android.brainbeats.ui.HeadsetService"
@@ -90,6 +104,12 @@
             android:icon="@drawable/ic_launcher">
         </activity>
 
+        <activity android:name=".data.DeleteTagsActivity">
+            <intent-filter>
+                <action android:name="com.pi.android.brainbeats.DELETE_TAGS_ACTIVITY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <!--
              (OPTIONAL) use this meta data to override the theme from which Android Auto will

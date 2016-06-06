@@ -66,7 +66,7 @@ public class MusicPlayerActivity extends BaseActivity
         setContentView(R.layout.activity_player);
         initializeToolbar();
 
-        mPasserelle = (Button) findViewById(R.id.button_headset);
+       /* mPasserelle = (Button) findViewById(R.id.button_headset);
 
         mPasserelle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,7 +77,7 @@ public class MusicPlayerActivity extends BaseActivity
                 // Puis on lance l'intent !
                 startActivity(headsetActivity);
             }
-        });
+        });*/
 
         initializeFromParams(savedInstanceState, getIntent());
 

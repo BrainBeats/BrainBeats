@@ -33,6 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.pi.android.brainbeats.R;
+import com.pi.android.brainbeats.settings.SettingsActivity;
 import com.pi.android.brainbeats.utils.LogHelper;
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
 import com.google.android.libraries.cast.companionlibrary.cast.callbacks.VideoCastConsumerImpl;
@@ -113,6 +114,9 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
                         break;
                     case R.id.navigation_playlists:
                         activityClass = PlaceholderActivity.class;
+                        break;
+                    case R.id.navigation_settings:
+                        activityClass = SettingsActivity.class;
                         break;
                 }
                 if (activityClass != null) {
