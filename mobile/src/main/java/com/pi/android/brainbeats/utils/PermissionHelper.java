@@ -13,6 +13,16 @@ public class PermissionHelper {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return;
         }
+
+        if (ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    1);
+        }
+
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(activity,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -20,6 +30,25 @@ public class PermissionHelper {
 
             ActivityCompat.requestPermissions(activity,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    1);
+        }
+
+
+        if (ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.BLUETOOTH)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.BLUETOOTH},
+                    1);
+        }
+
+        if (ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.BLUETOOTH_ADMIN)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.BLUETOOTH_ADMIN},
                     1);
         }
     }
