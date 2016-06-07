@@ -41,6 +41,7 @@ import com.pi.android.brainbeats.utils.LogHelper;
 /**
  * A class that shows the Media Queue to the user.
  */
+
 public class PlaybackControlsFragment extends Fragment {
 
     private static final String TAG = LogHelper.makeLogTag(PlaybackControlsFragment.class);

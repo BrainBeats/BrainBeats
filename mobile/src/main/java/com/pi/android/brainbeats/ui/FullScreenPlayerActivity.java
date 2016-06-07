@@ -32,6 +32,7 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -60,9 +61,12 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity {
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
 
+    public boolean brainMode = false;
+
     private ImageView mSkipPrev;
     private ImageView mSkipNext;
     private ImageView mPlayPause;
+    private ImageView mBB;
     private TextView mStart;
     private TextView mEnd;
     private SeekBar mSeekbar;
@@ -73,6 +77,8 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity {
     private View mControllers;
     private Drawable mPauseDrawable;
     private Drawable mPlayDrawable;
+    private Drawable mBBOn;
+    private Drawable mBBOff;
     private ImageView mBackgroundImage;
 
     private String mCurrentArtUrl;
@@ -135,6 +141,9 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity {
         mPauseDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_pause_white_48dp);
         mPlayDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_play_arrow_white_48dp);
         mPlayPause = (ImageView) findViewById(R.id.play_pause);
+        mBBOn = ContextCompat.getDrawable(this, R.drawable.uamp_ic_pause_white_48dp);
+        mBBOff = ContextCompat.getDrawable(this, R.drawable.ic_bb_on_36dp);
+        mBB = (ImageView) findViewById(R.id.BB);
         mSkipNext = (ImageView) findViewById(R.id.next);
         mSkipPrev = (ImageView) findViewById(R.id.prev);
         mStart = (TextView) findViewById(R.id.startText);
@@ -149,18 +158,48 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity {
         mSkipNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MediaControllerCompat.TransportControls controls =
-                    getSupportMediaController().getTransportControls();
-                controls.skipToNext();
+                if (brainMode) {
+                    MediaControllerCompat.TransportControls controls =
+                            getSupportMediaController().getTransportControls();
+                    controls.skipToPrevious();
+                } else {
+
+                    MediaControllerCompat.TransportControls controls =
+                        getSupportMediaController().getTransportControls();
+                    controls.skipToNext();
+                }
             }
         });
 
         mSkipPrev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MediaControllerCompat.TransportControls controls =
-                    getSupportMediaController().getTransportControls();
-                controls.skipToPrevious();
+                if (!brainMode) {
+                    MediaControllerCompat.TransportControls controls =
+                            getSupportMediaController().getTransportControls();
+                    controls.skipToPrevious();
+                } else {
+
+                    MediaControllerCompat.TransportControls controls =
+                            getSupportMediaController().getTransportControls();
+                    controls.skipToNext();
+                }
+            }
+        });
+
+        mBB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (brainMode) {
+                    brainMode = false;
+                    Log.e("BRAINBEATS MODE","OFF");
+                    mBB.setImageResource(R.drawable.ic_bb_on_36dp);
+                }else{
+                    brainMode=true;
+                    Log.e("BRAINBEATS MODE","ON");
+                    mBB.setImageResource(R.drawable.ic_bb_off_36dp);
+                }
+
             }
         });
 
